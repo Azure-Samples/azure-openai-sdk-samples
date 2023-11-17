@@ -1,0 +1,38 @@
+﻿@page "/"
+
+<PageTitle>Azure OpenAI Sample</PageTitle>
+
+<h1>Azure OpenAI issue helper sample</h1>
+
+<h2>Textarea Example</h2>
+
+<p>Enter your message below:</p>
+
+<textarea disabled=true rows="10" cols="100">@Message</textarea>
+
+<br />
+<button disabled="@isDisabled" @onclick="consumePrompt">Submit</button>
+<input cols="70" placeholder="Your prompt" @bind-value:event="oninput" @bind-value="Prompt" />
+
+@code {
+    //private bool isLoading { get; set; } = false;
+    private string? Prompt { get; set; } = null;
+    private string? Message { get; set; } = null;
+
+    private bool isDisabled { get; set; } = false;
+    // private PlanningCopilot planningCopilot  = PlanningCopilot();
+    private void consumePrompt()
+    {
+        isDisabled = true;
+        Message += Prompt + "\n";
+
+        // TODO
+        // We need to post-pend to `Message` the result of `issueHelper.SendChat()`
+        // Make an for the library module that retuns what you want printed instead of
+        // printing directly to std output
+        // Message += issueHelper.SendChat(Prompt);
+
+        Prompt = "";
+        isDisabled = false;
+    }
+}
