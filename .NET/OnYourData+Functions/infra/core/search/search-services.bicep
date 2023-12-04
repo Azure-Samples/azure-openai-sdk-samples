@@ -63,52 +63,14 @@ resource search 'Microsoft.Search/searchServices@2021-04-01-preview' = {
   sku: sku
 }
 
-// module storage '../storage/storage-account.bicep' = {
-//   name: 'storage'
-//   params: {
-//     name: storageAccountName
-//     location: location
-//     tags: tags
-//     containers: [
-//       {
-//         name: 'fileupload-container'
-//       }
-//     ]
-//   }
-// }
-
-// resource storageAcct 'Microsoft.Storage/storageAccounts@2023-01-01' existing = {
-//   name: storageAccountName
-// }
-// resource deploymentIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
-//   name: '${storageAcct.name}-deployment-identity'
-//   location: location
-// }
-
-// @description('This is the built-in Storage Blob Data Reader role. See https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#storage-blob-data-reader')
-// resource storageBlobDataReaderRoleDefinition 'Microsoft.Authorization/roleDefinitions@2018-01-01-preview' existing = {
-//   scope: subscription()
-//   name: 'b7e6dc6d-f1e8-4753-8033-0f276bb0955b'
-// }
-
-// resource storageBlobDataReaderRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-//   scope: storageAcct
-//   name: guid(storageAcct.id, deploymentIdentity.id, storageBlobDataReaderRoleDefinition.id)
-//   properties: {
-//     roleDefinitionId: storageBlobDataReaderRoleDefinition.id
-//     principalId: deploymentIdentity.properties.principalId
-//     principalType: 'ServicePrincipal'
-//   }
-// }
-
 var dataSourceConnectionString = '"ResourceId=${az.subscription().id}/resourceGroups/${az.resourceGroup().name}/providers/Microsoft.Storage/storageAccounts/${storageAccountName}/;"'
 
 module setupSearchService 'setup-search-service.bicep' = {
   name: 'setup-search-service'
   params: {
-    dataSourceContainerName: 'file-container'
+    dataSourceContainerName: storageAccountName
     dataSourceConnectionString: dataSourceConnectionString
-    dataSourceType: 'azureblob'
+    dataSourceType: 'azurefiles'
     location: location
     searchServiceName: search.name
   }

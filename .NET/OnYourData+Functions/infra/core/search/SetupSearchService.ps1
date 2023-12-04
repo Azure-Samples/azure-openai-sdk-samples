@@ -19,31 +19,49 @@ $DeploymentScriptOutputs = @{}
 # Create data source, index, and indexer definitions
 switch ($dataSourceType)
 {
-    "azureblob" {
+    "azurefiles" {
         $indexDefinition = @{
-            'name' = 'file-index';
+            'name' = 'oyd-index';
             'fields' = @(
-                @{ 'name' = 'rid'; 'type' = 'Edm.String'; 'key' = $true },
-                @{ 'name' = 'description'; 'type' = 'Edm.String'; 'retrievable' = $true; 'searchable' = $true }
+                @{ 'name' = 'work_area'; 'type' = 'Edm.String'; 'searchable' = $true; 'filterable' = $false; 'retrievable' = $true; 'sortable' = $false; 'facetable' = $false; 'key' = $false },
+                @{ 'name' = 'sme'; 'type' = 'Edm.String'; 'searchable' = $true; 'filterable' = $false; 'retrievable' = $true; 'sortable' = $false; 'facetable' = $false; 'key' = $false },
+                @{ 'name' = 'id'; 'type' = 'Edm.String'; 'searchable' = $false; 'filterable' = $true; 'retrievable' = $true; 'sortable' = $true; 'facetable' = $false; 'key' = $true },                @{ 'name' = 'content'; 'type' = 'Edm.String'; 'searchable' = $true; 'retrievable' = $true; 'key' = $false },
+                @{ 'name' = 'filepath'; 'type' = 'Edm.String'; 'retrievable' = $true; 'key' = $false },
+                @{ 'name' = 'title'; 'type' = 'Edm.String'; 'searchable' = $true; 'filterable' = $false; 'retrievable' = $true; 'sortable' = $false; 'facetable' = $false; 'key' = $false },
+                @{ 'name' = 'chunk_id'; 'type' = 'Edm.String'; 'searchable' = $false; 'filterable' = $false; 'retrievable' = $true; 'sortable' = $false; 'facetable' = $false; 'key' = $false },
+                @{ 'name' = 'last_updated'; 'type' = 'Edm.String'; 'searchable' = $false; 'filterable' = $false; 'retrievable' = $true; 'sortable' = $false; 'facetable' = $false; 'key' = $false }
             );
+            # 'analyzer' = null
         }
-        $dataSourceDefinition = @{
-            'name' = 'azureblob-datasource'
-            'type' = 'azureblob';
-            'container' = @{
-                'name' = $dataSourceContainerName;
-            };
-            'credentials' = @{
-                'connectionString' = $dataSourceConnectionString
-            };
-        }
+        # $indexDefinition = @{
+        #     'name' = 'file-index';
+        #     'fields' = @(
+        #         @{ 'name' = 'rid'; 'type' = 'Edm.String'; 'key' = $true },
+        #         @{ 'name' = 'description'; 'type' = 'Edm.String'; 'retrievable' = $true; 'searchable' = $true }
+        #     );
+        # }
+        # $dataSourceDefinition = @{
+        #     'name' = 'oyd-datashare'
+        #     'type' = 'azurefiles';
+        #     'container' = @{
+        #         'name' = $dataSourceContainerName;
+        #     };
+        #     'credentials' = @{
+        #         'connectionString' = $dataSourceConnectionString
+        #     };
+        # }
         $indexerDefinition = @{
-            'name' = 'azureblob-indexer';
-            'targetIndexName' = 'file-index';
-            'dataSourceName' = 'azureblob-datasource';
-            'schedule' = @{ 'interval' = 'PT5M' };
+            'name' = 'oyd-indexer';
+            'targetIndexName' = 'oyd-index';
+            'dataSourceName' = 'oyd-datashare';
+            'parameters' = @{
+                'configuration' = @{
+                   'indexedFileNameExtensions' = '.md'
+                }
+            };
+            'schedule' = 'null'; # 'null' means run once, requires manual runs for updated data
         }
-        $DeploymentScriptOutputs['indexName'] = 'file-index'
+        $DeploymentScriptOutputs['indexName'] = $indexDefinition['name']
     }
     default {
         throw "Unsupported data source type $dataSourceType"
@@ -61,11 +79,11 @@ try {
     if ($dataSourceContainerName.Length -gt 0 -and $dataSourceConnectionString.Length -gt 0)
     {
         # https://learn.microsoft.com/rest/api/searchservice/create-data-source
-        Invoke-WebRequest `
-            -Method 'PUT' `
-            -Uri "$uri/datasources/$($dataSourceDefinition['name'])?api-version=$apiversion" `
-            -Headers $headers `
-            -Body (ConvertTo-Json $dataSourceDefinition)
+        # Invoke-WebRequest `
+        #     -Method 'PUT' `
+        #     -Uri "$uri/datasources/$($dataSourceDefinition['name'])?api-version=$apiversion" `
+        #     -Headers $headers `
+        #     -Body (ConvertTo-Json $dataSourceDefinition)
 
         # https://learn.microsoft.com/rest/api/searchservice/create-indexer
         Invoke-WebRequest `

@@ -24,6 +24,7 @@ param appServicePlanName string = ''
 param searchServiceName string = ''
 param storageAccountName string = ''
 param docIntelServiceName string = ''
+param fileUpload bool = true
 
 var abbrs = loadJsonContent('./abbreviations.json')
 
@@ -56,26 +57,37 @@ resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
 // Add resources to be provisioned below.
 // A full example that leverages azd bicep modules can be seen in the todo-python-mongo template:
 // https://github.com/Azure-Samples/todo-python-mongo/tree/main/infra
-module storage 'core/storage/storage-account.bicep' = {
-  name: 'storage'
+
+// module storage 'core/storage/storage-account.bicep' = {
+//   name: 'storage'
+//   scope: rg
+//   params: {
+//     name: !empty(storageAccountName) ? storageAccountName : '${abbrs.storageStorageAccounts}${resourceToken}'
+//     location: location
+//     tags: tags
+//   }
+// }
+
+module file 'core/storage/file.bicep' = if (fileUpload) {
+  name: 'file-upload'
   scope: rg
   params: {
     name: !empty(storageAccountName) ? storageAccountName : '${abbrs.storageStorageAccounts}${resourceToken}'
     location: location
-    tags: tags
   }
 }
 
-// module search 'core/search/search-services.bicep' = {
-//   name: 'search'
-//   scope: rg
-//   params: {
-//     name: !empty(searchServiceName) ? searchServiceName : '${abbrs.searchSearchServices}${resourceToken}'
-//     location: location
-//     tags: tags
-//     storageAccountName: storage.outputs.name
-//   }
-// }
+module search 'core/search/search-services.bicep' = {
+  name: 'search'
+  scope: rg
+  params: {
+    name: !empty(searchServiceName) ? searchServiceName : '${abbrs.searchSearchServices}${resourceToken}'
+    location: location
+    tags: tags
+    storageAccountName: file.name
+  }
+}
+
 
 module appServicePlan 'core/host/appserviceplan.bicep' = {
   name: 'appServicePlan'
