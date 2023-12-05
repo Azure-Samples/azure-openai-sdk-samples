@@ -66,16 +66,15 @@ module storage 'core/storage/storage-account.bicep' = {
   }
 }
 
-// module search 'core/search/search-services.bicep' = {
-//   name: 'search'
-//   scope: rg
-//   params: {
-//     name: !empty(searchServiceName) ? searchServiceName : '${abbrs.searchSearchServices}${resourceToken}'
-//     location: location
-//     tags: tags
-//     storageAccountName: storage.outputs.name
-//   }
-// }
+module search 'core/search/search-services.bicep' = {
+  name: 'search'
+  scope: rg
+  params: {
+    name: !empty(searchServiceName) ? searchServiceName : '${abbrs.searchSearchServices}${resourceToken}'
+    location: location
+    tags: tags
+  }
+}
 
 module appServicePlan 'core/host/appserviceplan.bicep' = {
   name: 'appServicePlan'
@@ -120,4 +119,9 @@ module account 'core/ai/cognitiveservices.bicep' = {
 // Outputs are automatically saved in the local azd environment .env file.
 // To see these outputs, run `azd env get-values`,  or `azd env get-values --output json` for json output.
 output AZURE_LOCATION string = location
-output AZURE_TENANT_ID string = tenant().tenantId
+output AZURE_OPENAI_ENDPOINT string = account.outputs.endpoint
+// output AZURE_OPENAI_KEY string = 
+// output AZURE_SEARCH_ENDPOINT string = search
+// output AZURE_SEARCH_INDEX string = 
+// output AZURE_SEARCH_KEY string = 
+// output AZURE_SEARCH_DEPLOYMENT string = 
