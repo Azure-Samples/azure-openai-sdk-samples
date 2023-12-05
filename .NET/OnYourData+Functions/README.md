@@ -1,6 +1,6 @@
 # Azure OpenAI on your data and function calling
 
-A sample demonstrating the integration of [Azure OpenAI On Your Data](https://learn.microsoft.com/azure/ai-services/openai/concepts/use-your-data?tabs=ai-search) with [Chat Completions Functions](https://learn.microsoft.com/azure/ai-services/openai/how-to/function-calling) in the form of a project planning assistant. Building on the general chat experience, users can ask for details from their provided data (e.g. "Who do I file UI bugs against?" or "Which versions of our project are most-used by customers?") for improved conversation context. When the user is ready to create work items, the assistant can make one or several calls to GitHub and includes relevant information like the project area and assignee for the item.
+This sample demonstrates the integration of [Azure OpenAI On Your Data](https://learn.microsoft.com/azure/ai-services/openai/concepts/use-your-data?tabs=ai-search) with [Chat Completions Functions](https://learn.microsoft.com/azure/ai-services/openai/how-to/function-calling) in the form of a project planning assistant. Building on the general chat experience, users can ask for details from their provided data to improve conversational context. For example, questions like "Who do I file UI bugs against?" or "Which versions of our project are most-used by customers?" will engage the Azure OpenAI on your data flow to find relevant answers from the example team data. When the user is ready to create work items, the assistant can make one or several calls to GitHub to do so and will include relevant information - like the project area and assignee for each item.
 
 ## Azure account requirements
 
@@ -27,19 +27,28 @@ However, you can try the [Azure pricing calculator](https://azure.com/e/8ffbe5b1
 
 ### Project setup
 
-This project is being refactored for automatic provisioning and deployment via `azd up`, supported by the [Azure Developer CLI](https://aka.ms/azure-dev/install).
-Until then, configure with your resources by providing values for these environment variables:
+> This project is actively being updated  provisioning and deployment via `azd up`, supported by the [Azure Developer CLI](https://aka.ms/azure-dev/install).
+Currently, `azd up` deploys all the services needed to run the sample but a one-time manual engagement is needed to run the Search Index (details below).
+
+1. Run `azd up`
+1. Answer prompt to enter environment name
+1. Select an Azure subscription and location
+1. Magic - 6 resources created: rg, app service plan, app service, storage account, form reco, search service
 
 * `AZURE_OPENAI_ENDPOINT`
 * `AZURE_OPENAI_KEY`
-* `GITHUB_USER`
-* `GITHUB_ORG_NAME`
-* `GITHUB_REPO_NAME`
-* `GITHUB_PAT` (create a granular access token in your `Settings` page in GitHub. If your repos will be for an org, remember to select the org when creating the token)
 * `AZURE_SEARCH_ENDPOINT`
 * `AZURE_SEARCH_INDEX`
 * `AZURE_SEARCH_KEY`
 * `AZURE_SEARCH_DEPLOYMENT`
+
+Additionally, you'll need to configure these variables with details from your GitHub repo.
+
+* `GITHUB_USER`
+* `GITHUB_ORG_NAME`
+* `GITHUB_REPO_NAME`
+* `GITHUB_PAT` (create a granular access token in your `Settings` page in GitHub. If your repos will be for an org, remember to select the org when creating the token)
+
 
 You can set these in a .env file or via command line
 
@@ -59,4 +68,4 @@ source .env
 
 ## Build and run
 
-The project is provided with the option of using a CLI or web app frontend, found in (azure-openai-cli)[] and (azure-openai-webapp)[], respectively. The (azure-openai-bin)[] directory contains the "backend" API logic.
+The project is provided with the option of using a CLI or web app frontend, found in [azure-openai-cli](./azure-openai-cli) and [azure-openai-webapp](./azure-openai-webapp), respectively. The [azure-openai-bin](./azure-openai-bin) directory contains the "backend" API logic.
