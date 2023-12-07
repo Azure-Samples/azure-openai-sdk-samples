@@ -2,7 +2,7 @@ metadata description = 'Creates an Azure Cognitive Search instance.'
 param name string
 param location string = resourceGroup().location
 param tags object = {}
-param storageAccountName string
+param containerName string = ''
 
 param sku object = {
   name: 'standard'
@@ -63,14 +63,11 @@ resource search 'Microsoft.Search/searchServices@2021-04-01-preview' = {
   sku: sku
 }
 
-var dataSourceConnectionString = '"ResourceId=${az.subscription().id}/resourceGroups/${az.resourceGroup().name}/providers/Microsoft.Storage/storageAccounts/${storageAccountName}/;"'
-
 module setupSearchService 'setup-search-service.bicep' = {
   name: 'setup-search-service'
   params: {
-    dataSourceContainerName: storageAccountName
-    dataSourceConnectionString: dataSourceConnectionString
-    dataSourceType: 'azurefiles'
+    dataSourceContainerName: containerName
+    dataSourceType: 'azureblob'
     location: location
     searchServiceName: search.name
   }

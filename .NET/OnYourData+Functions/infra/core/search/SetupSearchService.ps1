@@ -1,7 +1,6 @@
 param(
     [string] [Parameter(Mandatory=$true)] $searchServiceName,
     [string] [Parameter(Mandatory=$true)] $dataSourceContainerName,
-    [string] [Parameter(Mandatory=$true)] [AllowEmptyString()] $dataSourceConnectionString,
     [string] [Parameter(Mandatory=$true)] $dataSourceType
 )
 
@@ -12,48 +11,65 @@ $token = Get-AzAccessToken -ResourceUrl https://search.azure.com | select -expan
 $headers = @{ 'Authorization' = "Bearer $token"; 'Content-Type' = 'application/json'; }
 $uri = "https://$searchServiceName.search.windows.net"
 $indexDefinition = $null
-$dataSourceDefinition = $null
+#$dataSourceDefinition = $null
 $indexerDefinition = $null
 $DeploymentScriptOutputs = @{}
 
 # Create data source, index, and indexer definitions
 switch ($dataSourceType)
 {
-    "azurefiles" {
+    "azureblob" {
         $indexDefinition = @{
-            'name' = 'oyd-index';
+            'name' = 'oyd-index'
+            'defaultScoringProfile' = $null
             'fields' = @(
-                @{ 'name' = 'work_area'; 'type' = 'Edm.String'; 'searchable' = $true; 'filterable' = $false; 'retrievable' = $true; 'sortable' = $false; 'facetable' = $false; 'key' = $false },
-                @{ 'name' = 'sme'; 'type' = 'Edm.String'; 'searchable' = $true; 'filterable' = $false; 'retrievable' = $true; 'sortable' = $false; 'facetable' = $false; 'key' = $false },
-                @{ 'name' = 'id'; 'type' = 'Edm.String'; 'searchable' = $false; 'filterable' = $true; 'retrievable' = $true; 'sortable' = $true; 'facetable' = $false; 'key' = $true },                @{ 'name' = 'content'; 'type' = 'Edm.String'; 'searchable' = $true; 'retrievable' = $true; 'key' = $false },
-                @{ 'name' = 'filepath'; 'type' = 'Edm.String'; 'retrievable' = $true; 'key' = $false },
-                @{ 'name' = 'title'; 'type' = 'Edm.String'; 'searchable' = $true; 'filterable' = $false; 'retrievable' = $true; 'sortable' = $false; 'facetable' = $false; 'key' = $false },
-                @{ 'name' = 'chunk_id'; 'type' = 'Edm.String'; 'searchable' = $false; 'filterable' = $false; 'retrievable' = $true; 'sortable' = $false; 'facetable' = $false; 'key' = $false },
-                @{ 'name' = 'last_updated'; 'type' = 'Edm.String'; 'searchable' = $false; 'filterable' = $false; 'retrievable' = $true; 'sortable' = $false; 'facetable' = $false; 'key' = $false }
+                @{ 'name' = 'content'; 'type' = 'Edm.String'; 'searchable' = $true; 'filterable' = $false; 'retrievable' = $true; 'sortable' = $false; 'facetable' = $false; 'key' = $false; 'indexAnalyzer' = $null; 'searchAnalyzer' = $null; 'analyzer' = $null; 'normalizer' = $null; 'dimensions' = $null; 'vectorSearchProfile' = $null; 'synonymMaps' = @() },
+                @{ 'name' = 'filepath'; 'type' = 'Edm.String'; 'searchable' = $false; 'filterable' = $false; 'retrievable' = $true; 'sortable' = $false; 'facetable' = $false; 'key' = $false; 'indexAnalyzer' = $null; 'searchAnalyzer' = $null; 'analyzer' = $null; 'normalizer' = $null; 'dimensions' = $null; 'vectorSearchProfile' = $null; 'synonymMaps' = @() },
+                @{ 'name' = 'title'; 'type' = 'Edm.String'; 'searchable' = $true; 'filterable' = $false; 'retrievable' = $true; 'sortable' = $false; 'facetable' = $false; 'key' = $false; 'indexAnalyzer' = $null; 'searchAnalyzer' = $null; 'analyzer' = $null; 'normalizer' = $null; 'dimensions' = $null; 'vectorSearchProfile' = $null; 'synonymMaps' = @() },
+                @{ 'name' = 'url'; 'type' = 'Edm.String'; 'searchable' = $false; 'filterable' = $false; 'retrievable' = $true; 'sortable' = $false; 'facetable' = $false; 'key' = $false; 'indexAnalyzer' = $null; 'searchAnalyzer' = $null; 'analyzer' = $null; 'normalizer' = $null; 'dimensions' = $null; 'vectorSearchProfile' = $null; 'synonymMaps' = @() },
+                @{ 'name' = 'id'; 'type' = 'Edm.String'; 'searchable' = $false; 'filterable' = $true; 'retrievable' = $true; 'sortable' = $true; 'facetable' = $false; 'key' = $true; 'indexAnalyzer' = $null; 'searchAnalyzer' = $null; 'analyzer' = $null; 'normalizer' = $null; 'dimensions' = $null; 'vectorSearchProfile' = $null; 'synonymMaps' = @() },
+                @{ 'name' = 'chunk_id'; 'type' = 'Edm.String'; 'searchable' = $false; 'filterable' = $false; 'retrievable' = $true; 'sortable' = $false; 'facetable' = $false; 'key' = $false; 'indexAnalyzer' = $null; 'searchAnalyzer' = $null; 'analyzer' = $null; 'normalizer' = $null; 'dimensions' = $null; 'vectorSearchProfile' = $null; 'synonymMaps' = @() },
+                @{ 'name' = 'last_updated'; 'type' = 'Edm.String'; 'searchable' = $false; 'filterable' = $false; 'retrievable' = $true; 'sortable' = $false; 'facetable' = $false; 'key' = $false; 'indexAnalyzer' = $null; 'searchAnalyzer' = $null; 'analyzer' = $null; 'normalizer' = $null; 'dimensions' = $null; 'vectorSearchProfile' = $null; 'synonymMaps' = @() }
             );
-            # 'analyzer' = null
+            'scoringProfiles' = @()
+            'corsOptions' = $null
+            'suggesters' = @()
+            'analyzers' = @()
+            'normalizers' = @()
+            'tokenizers' = @()
+            'tokenFilters' = @()
+            'charFilters' = @()
+            'encryptionKey' = $null
+            'similarity' = @{
+                '@odata.type' = '#Microsoft.Azure.Search.BM25Similarity'
+                'k1' = $null
+                'b' = $null
+            }
+            'semantic' = @{
+                'defaultConfiguration' = $null
+                'configurations' = @(
+                    @{
+                        'name' = 'default'
+                        'prioritizedFields' = @{
+                            'titleField' = @{
+                                'fieldName' = 'title'
+                            }
+                            'prioritizedContentFields' = @(
+                                @{
+                                    'fieldName' = 'content'
+                                }
+                            )
+                            'prioritizedKeywordsFields' = @()
+                        }
+                    }
+                )
+            }
+            'vectorSearch' = $null
         }
-        # $indexDefinition = @{
-        #     'name' = 'file-index';
-        #     'fields' = @(
-        #         @{ 'name' = 'rid'; 'type' = 'Edm.String'; 'key' = $true },
-        #         @{ 'name' = 'description'; 'type' = 'Edm.String'; 'retrievable' = $true; 'searchable' = $true }
-        #     );
-        # }
-        # $dataSourceDefinition = @{
-        #     'name' = 'oyd-datashare'
-        #     'type' = 'azurefiles';
-        #     'container' = @{
-        #         'name' = $dataSourceContainerName;
-        #     };
-        #     'credentials' = @{
-        #         'connectionString' = $dataSourceConnectionString
-        #     };
-        # }
         $indexerDefinition = @{
             'name' = 'oyd-indexer';
             'targetIndexName' = 'oyd-index';
-            'dataSourceName' = 'oyd-datashare';
+            'dataSourceName' = 'oyd-blobcontainer';
             'parameters' = @{
                 'configuration' = @{
                    'indexedFileNameExtensions' = '.md'
@@ -76,22 +92,12 @@ try {
         -Headers  $headers `
         -Body (ConvertTo-Json $indexDefinition)
 
-    if ($dataSourceContainerName.Length -gt 0 -and $dataSourceConnectionString.Length -gt 0)
-    {
-        # https://learn.microsoft.com/rest/api/searchservice/create-data-source
-        # Invoke-WebRequest `
-        #     -Method 'PUT' `
-        #     -Uri "$uri/datasources/$($dataSourceDefinition['name'])?api-version=$apiversion" `
-        #     -Headers $headers `
-        #     -Body (ConvertTo-Json $dataSourceDefinition)
-
-        # https://learn.microsoft.com/rest/api/searchservice/create-indexer
-        Invoke-WebRequest `
-            -Method 'PUT' `
-            -Uri "$uri/indexers/$($indexerDefinition['name'])?api-version=$apiversion" `
-            -Headers $headers `
-            -Body (ConvertTo-Json $indexerDefinition)
-    }
+    # https://learn.microsoft.com/rest/api/searchservice/create-indexer
+    Invoke-WebRequest `
+        -Method 'PUT' `
+        -Uri "$uri/indexers/$($indexerDefinition['name'])?api-version=$apiversion" `
+        -Headers $headers `
+        -Body (ConvertTo-Json $indexerDefinition)
 } catch {
     Write-Error $_.ErrorDetails.Message
     throw

@@ -4,8 +4,6 @@ param location string
 
 param dataSourceType string
 
-param dataSourceConnectionString string = ''
-
 param dataSourceContainerName string
 
 resource searchService 'Microsoft.Search/searchServices@2022-09-01' existing = {
@@ -51,7 +49,7 @@ resource setupSearchService 'Microsoft.Resources/deploymentScripts@2020-10-01' =
   properties: {
     azPowerShellVersion: '8.3'
     timeout: 'PT6M'
-    arguments: '-dataSourceContainerName \\"${dataSourceContainerName}\\" -dataSourceConnectionString \\"${dataSourceConnectionString}\\" -dataSourceType \\"${dataSourceType}\\" -searchServiceName \\"${searchServiceName}\\"'
+    arguments: '-dataSourceContainerName \\"${dataSourceContainerName}\\" -dataSourceType \\"${dataSourceType}\\" -searchServiceName \\"${searchServiceName}\\"'
     scriptContent: loadTextContent('SetupSearchService.ps1')
     cleanupPreference: 'OnSuccess'
     retentionInterval: 'P1D'

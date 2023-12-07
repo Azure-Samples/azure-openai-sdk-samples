@@ -23,8 +23,7 @@ param appServiceName string = ''
 param appServicePlanName string = ''
 param searchServiceName string = ''
 param storageAccountName string = ''
-param docIntelServiceName string = ''
-param fileUpload bool = true
+param openAIServiceName string = ''
 
 var abbrs = loadJsonContent('./abbreviations.json')
 
@@ -44,8 +43,6 @@ var resourceToken = toLower(uniqueString(subscription().id, environmentName, loc
 //   Microsoft.Web/sites for appservice, function
 // Example usage:
 //   tags: union(tags, { 'azd-service-name': apiServiceName })
-#disable-next-line no-unused-vars
-var apiServiceName = 'python-api'
 
 // Organize resources in a resource group
 resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
@@ -57,23 +54,13 @@ resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
 // Add resources to be provisioned below.
 // A full example that leverages azd bicep modules can be seen in the todo-python-mongo template:
 // https://github.com/Azure-Samples/todo-python-mongo/tree/main/infra
-
-// module storage 'core/storage/storage-account.bicep' = {
-//   name: 'storage'
-//   scope: rg
-//   params: {
-//     name: !empty(storageAccountName) ? storageAccountName : '${abbrs.storageStorageAccounts}${resourceToken}'
-//     location: location
-//     tags: tags
-//   }
-// }
-
-module file 'core/storage/file.bicep' = if (fileUpload) {
-  name: 'file-upload'
+module storage 'core/storage/storage-account.bicep' = {
+  name: 'storage'
   scope: rg
   params: {
     name: !empty(storageAccountName) ? storageAccountName : '${abbrs.storageStorageAccounts}${resourceToken}'
     location: location
+    tags: tags
   }
 }
 
@@ -84,10 +71,9 @@ module search 'core/search/search-services.bicep' = {
     name: !empty(searchServiceName) ? searchServiceName : '${abbrs.searchSearchServices}${resourceToken}'
     location: location
     tags: tags
-    storageAccountName: file.name
+    containerName: storage.outputs.container
   }
 }
-
 
 module appServicePlan 'core/host/appserviceplan.bicep' = {
   name: 'appServicePlan'
@@ -113,13 +99,13 @@ module appService 'core/host/appservice.bicep' = {
   }
 }
 
-module account 'core/ai/cognitiveservices.bicep' = {
-  name: 'docIntelligence'
+module openai 'core/ai/openai.bicep' = {
+  name: 'openai'
   scope: rg
   params: {
-    name: !empty(docIntelServiceName) ? docIntelServiceName : '${abbrs.cognitiveServicesFormRecognizer}${resourceToken}'
+    name: !empty(openAIServiceName) ? openAIServiceName : 'aoai-${resourceToken}'
     location: location
-    kind: 'FormRecognizer'
+    kind: 'OpenAI'
   }
 }
 
@@ -132,4 +118,13 @@ module account 'core/ai/cognitiveservices.bicep' = {
 // Outputs are automatically saved in the local azd environment .env file.
 // To see these outputs, run `azd env get-values`,  or `azd env get-values --output json` for json output.
 output AZURE_LOCATION string = location
-output AZURE_TENANT_ID string = tenant().tenantId
+output AZURE_OPENAI_ENDPOINT string = openai.outputs.endpoint
+output AZURE_OPENAI_DEPLOYMENT string = openai.outputs.aiDeployment
+output AZURE_SEARCH_DEPLOYMENT string = openai.outputs.searchDeployment
+output AZURE_SEARCH_ENDPOINT string = search.outputs.endpoint
+
+//output AZURE_SEARCH_INDEX string =
+
+// output AZURE_OPENAI_KEY string =
+// output AZURE_SEARCH_KEY string = search.outputs.
+
