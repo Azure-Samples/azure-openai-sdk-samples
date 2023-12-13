@@ -72,6 +72,7 @@ module search 'core/search/search-services.bicep' = {
     location: location
     tags: tags
     containerName: storage.outputs.container
+    storageAccountName: storage.outputs.name
   }
 }
 
@@ -122,8 +123,7 @@ output AZURE_OPENAI_ENDPOINT string = openai.outputs.endpoint
 output AZURE_OPENAI_DEPLOYMENT string = openai.outputs.aiDeployment
 output AZURE_SEARCH_DEPLOYMENT string = openai.outputs.searchDeployment
 output AZURE_SEARCH_ENDPOINT string = search.outputs.endpoint
-
-//output AZURE_SEARCH_INDEX string =
+// output AZURE_SEARCH_INDEX string = search.outputs.index
 
 // output AZURE_OPENAI_KEY string =
 // output AZURE_SEARCH_KEY string = search.outputs.
