@@ -76,3 +76,4 @@ module setupSearchService 'setup-search-service.bicep' = {
 output id string = search.id
 output endpoint string = 'https://${name}.search.windows.net/'
 output name string = search.name
+output index string = setupSearchService.outputs.indexName

@@ -52,7 +52,7 @@ resource setupSearchService 'Microsoft.Resources/deploymentScripts@2020-10-01' =
     arguments: '-dataSourceContainerName \\"${dataSourceContainerName}\\" -dataSourceType \\"${dataSourceType}\\" -searchServiceName \\"${searchServiceName}\\"'
     scriptContent: loadTextContent('SetupSearchService.ps1')
     cleanupPreference: 'OnSuccess'
-    retentionInterval: 'P1D'
+    retentionInterval: 'PT1H'
   }
 }
 
