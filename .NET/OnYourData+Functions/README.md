@@ -55,11 +55,13 @@ Configure the workspace:
 
 If you don't have any pre-existing Azure services and want to start from a fresh deployment. (If you already have existing Azure resources you want to re-use, follow the steps below in [deploy with existing Azure resources](#deploy-with-existing-azure-resources))
 
+> [!IMPORTANT]
+> Be aware that the resources created by this command will incur immediate costs, primarily from the AI Search resource. These resources may accrue costs even if you interrupt the command before it is fully executed. You can run `azd down` or delete the resources manually to avoid unnecessary spending.
+
 1. Run `azd up` - This will provision Azure resources and deploy this sample to those resources, including building the search index based on the files found in the `./data` folder.
-    * **Important**: Beware that the resources created by this command will incur immediate costs, primarily from the AI Search resource. These resources may accrue costs even if you interrupt the command before it is fully executed. You can run `azd down` or delete the resources manually to avoid unnecessary spending.
     * You will be prompted to select a location for the resources, this needs to be a location with OpenAI resource support (which is currently a short list). That location list is based on the [OpenAI model availability table](https://learn.microsoft.com/azure/cognitive-services/openai/concepts/models#model-summary-table-and-region-availability) and may become outdated as availability changes.
-1. After the application has been successfully deployed you will see a URL printed to the console.  Click that URL to interact with the application in your browser.
-It will look like the following:
+1. Create a Search Index (update in-progress with https://github.com/Azure-Samples/azure-openai-sdk-samples/issues/4)
+    * (Description of steps to create index)
 
 #### Deploy with existing Azure resources
 
@@ -86,7 +88,7 @@ If you already have existing Azure resources you want to re-use, you can do so b
 * If that resource group is in a different location than the one you'll pick for the `azd up` step,
   then run `azd env set AZURE_SEARCH_SERVICE_LOCATION {Location of existing service}`
 * If the search service's SKU is not standard, then run `azd env set AZURE_SEARCH_SERVICE_SKU {Name of SKU}`. The free tier won't work as it doesn't support managed identity. If your existing search service is using the free tier, you will need to deploy a new service since [search SKUs cannot be changed](https://learn.microsoft.com/azure/search/search-sku-tier#tier-upgrade-or-downgrade). ([See other possible SKU values](https://learn.microsoft.com/azure/templates/microsoft.search/searchservices?pivots=deployment-language-bicep#sku))
-* If you have an existing index that is set up with all the expected fields, then run `azd env set AZURE_SEARCH_INDEX {Name of existing index}`. Otherwise, the `azd up` command will create a new index.
+* If you have an existing index that is set up with all the expected fields, then run `azd env set AZURE_SEARCH_INDEX {Name of existing index}`. Otherwise, see the steps above in "Create a Search Index" to create a new index.
 
 #### Configure GitHub resources
 
