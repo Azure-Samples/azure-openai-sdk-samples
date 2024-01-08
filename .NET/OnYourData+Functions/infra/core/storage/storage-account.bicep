@@ -41,26 +41,24 @@ param sku object = { name: 'Standard_LRS' }
 resource blobstorage 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   name: name
   location: location
+  sku: {
+    name: 'Standard_LRS'
+  }
+  kind: 'StorageV2'
   tags: tags
-  kind: kind
-  sku: sku
+
   properties: {
-    accessTier: accessTier
-    allowBlobPublicAccess: allowBlobPublicAccess
-    allowCrossTenantReplication: allowCrossTenantReplication
-    allowSharedKeyAccess: allowSharedKeyAccess
-    defaultToOAuthAuthentication: defaultToOAuthAuthentication
-    dnsEndpointType: dnsEndpointType
-    minimumTlsVersion: minimumTlsVersion
-    networkAcls: networkAcls
-    publicNetworkAccess: publicNetworkAccess
-    supportsHttpsTrafficOnly: supportsHttpsTrafficOnly
+    azureFilesIdentityBasedAuthentication: {
+      directoryServiceOptions: 'None'
+      defaultSharePermission: 'StorageFileDataSmbShareContributor'
+    }
   }
 
   resource blobServices 'blobServices' = {
     name: 'default'
-    properties: {
-      deleteRetentionPolicy: deleteRetentionPolicy
+
+    resource share 'shares' = {
+      name: fileShareName
     }
     resource container 'containers' = {
       name: blobcontainer

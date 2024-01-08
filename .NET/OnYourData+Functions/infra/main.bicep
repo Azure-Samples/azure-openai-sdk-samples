@@ -127,4 +127,3 @@ output AZURE_SEARCH_ENDPOINT string = search.outputs.endpoint
 
 // output AZURE_OPENAI_KEY string =
 // output AZURE_SEARCH_KEY string = search.outputs.
-
