@@ -11,7 +11,7 @@ Samples are have a top-level directory of the scenario name. If a sample has bee
 - etc.
 
 > [!TIP]
-> This repo will continually be updated - as we add more samples, to avoid taking unneeded storage space, consider using a (sparse checkout[https://git-scm.com/docs/git-sparse-checkout]) to clone only the sample you're interested in!
+> This repo will continually be updated - as we add more samples, to avoid taking unneeded storage space, consider using a [sparse checkout](https://git-scm.com/docs/git-sparse-checkout) to clone only the sample you're interested in!
 
 ## Contributing
 
