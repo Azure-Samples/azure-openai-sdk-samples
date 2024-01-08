@@ -2,6 +2,8 @@ metadata description = 'Creates an Azure Cognitive Search instance.'
 param name string
 param location string = resourceGroup().location
 param tags object = {}
+param containerName string = ''
+param storageAccountName string = ''
 
 param sku object = {
   name: 'standard'
@@ -62,6 +64,18 @@ resource search 'Microsoft.Search/searchServices@2021-04-01-preview' = {
   sku: sku
 }
 
+// module setupSearchService 'setup-search-service.bicep' = {
+//   name: 'setup-search-service'
+//   params: {
+//     storageAccountName: storageAccountName
+//     dataSourceContainerName: containerName
+//     dataSourceType: 'azureblob'
+//     location: location
+//     searchServiceName: search.name
+//   }
+// }
+
 output id string = search.id
 output endpoint string = 'https://${name}.search.windows.net/'
 output name string = search.name
+// output index string = setupSearchService.outputs.indexName

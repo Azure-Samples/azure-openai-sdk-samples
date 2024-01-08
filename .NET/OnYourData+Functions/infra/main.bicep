@@ -23,7 +23,7 @@ param appServiceName string = ''
 param appServicePlanName string = ''
 param searchServiceName string = ''
 param storageAccountName string = ''
-param docIntelServiceName string = ''
+param openAIServiceName string = ''
 
 var abbrs = loadJsonContent('./abbreviations.json')
 
@@ -43,8 +43,6 @@ var resourceToken = toLower(uniqueString(subscription().id, environmentName, loc
 //   Microsoft.Web/sites for appservice, function
 // Example usage:
 //   tags: union(tags, { 'azd-service-name': apiServiceName })
-#disable-next-line no-unused-vars
-var apiServiceName = 'python-api'
 
 // Organize resources in a resource group
 resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
@@ -73,6 +71,8 @@ module search 'core/search/search-services.bicep' = {
     name: !empty(searchServiceName) ? searchServiceName : '${abbrs.searchSearchServices}${resourceToken}'
     location: location
     tags: tags
+    containerName: storage.outputs.container
+    storageAccountName: storage.outputs.name
   }
 }
 
@@ -100,13 +100,13 @@ module appService 'core/host/appservice.bicep' = {
   }
 }
 
-module account 'core/ai/cognitiveservices.bicep' = {
-  name: 'docIntelligence'
+module openai 'core/ai/openai.bicep' = {
+  name: 'openai'
   scope: rg
   params: {
-    name: !empty(docIntelServiceName) ? docIntelServiceName : '${abbrs.cognitiveServicesFormRecognizer}${resourceToken}'
+    name: !empty(openAIServiceName) ? openAIServiceName : 'aoai-${resourceToken}'
     location: location
-    kind: 'FormRecognizer'
+    kind: 'OpenAI'
   }
 }
 
@@ -119,9 +119,11 @@ module account 'core/ai/cognitiveservices.bicep' = {
 // Outputs are automatically saved in the local azd environment .env file.
 // To see these outputs, run `azd env get-values`,  or `azd env get-values --output json` for json output.
 output AZURE_LOCATION string = location
-output AZURE_OPENAI_ENDPOINT string = account.outputs.endpoint
-// output AZURE_OPENAI_KEY string = 
-// output AZURE_SEARCH_ENDPOINT string = search
-// output AZURE_SEARCH_INDEX string = 
-// output AZURE_SEARCH_KEY string = 
-// output AZURE_SEARCH_DEPLOYMENT string = 
+output AZURE_OPENAI_ENDPOINT string = openai.outputs.endpoint
+output AZURE_OPENAI_DEPLOYMENT string = openai.outputs.aiDeployment
+output AZURE_SEARCH_DEPLOYMENT string = openai.outputs.searchDeployment
+output AZURE_SEARCH_ENDPOINT string = search.outputs.endpoint
+// output AZURE_SEARCH_INDEX string = search.outputs.index
+
+// output AZURE_OPENAI_KEY string =
+// output AZURE_SEARCH_KEY string = search.outputs.
