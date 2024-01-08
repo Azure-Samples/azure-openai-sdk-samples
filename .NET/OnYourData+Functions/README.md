@@ -111,3 +111,4 @@ If you've changed the infrastructure files (`infra` folder or `azure.yaml`), the
 
 From the parent directory:
 `dotnet run --project azure-openai-cli`
+
