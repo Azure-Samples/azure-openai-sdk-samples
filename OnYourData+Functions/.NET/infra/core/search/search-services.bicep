@@ -2,8 +2,8 @@ metadata description = 'Creates an Azure Cognitive Search instance.'
 param name string
 param location string = resourceGroup().location
 param tags object = {}
-param containerName string = ''
-param storageAccountName string = ''
+// param containerName string = ''
+// param storageAccountName string = ''
 
 param sku object = {
   name: 'standard'
