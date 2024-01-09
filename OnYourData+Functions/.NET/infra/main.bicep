@@ -71,8 +71,6 @@ module search 'core/search/search-services.bicep' = {
     name: !empty(searchServiceName) ? searchServiceName : '${abbrs.searchSearchServices}${resourceToken}'
     location: location
     tags: tags
-    containerName: storage.outputs.container
-    storageAccountName: storage.outputs.name
   }
 }
 

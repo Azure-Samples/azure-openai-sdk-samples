@@ -60,8 +60,44 @@ If you don't have any pre-existing Azure services and want to start from a fresh
 
 1. Run `azd up` - This will provision Azure resources and deploy this sample to those resources, including building the search index based on the files found in the `./data` folder.
     * You will be prompted to select a location for the resources, this needs to be a location with OpenAI resource support (which is currently a short list). That location list is based on the [OpenAI model availability table](https://learn.microsoft.com/azure/cognitive-services/openai/concepts/models#model-summary-table-and-region-availability) and may become outdated as availability changes.
-1. Create a Search Index (update in-progress with https://github.com/Azure-Samples/azure-openai-sdk-samples/issues/4)
-    * (Description of steps to create index)
+1. Create a Search Index
+
+> [!NOTE]
+> As of this writing, az cli does not support creating a Search Index or Indexer. An automated workaround is [in-progress]( https://github.com/Azure-Samples/azure-openai-sdk-samples/issues/4), until then the Index can be manually set up as follows.
+
+  * WIP - Azure Portal steps
+	1. Go to resource group
+	2. Select Search service
+	3. Select "Add Index (JSON)"
+		a. Paste JSON from MyData\oyd-index.json and click Save
+		b. Save index name to AZURE_SEARCH_INDEX
+	4. Add data source
+		a. Select storage account
+	5. Select "Add Indexer (JSON)"
+		a. Paste JSON from MyData\oyd-indexer.json and click Save
+    b. click "Run"
+
+  * WIP - [Powershell steps](https://learn.microsoft.com/en-us/azure/search/search-get-started-powershell#1---create-an-index)
+```powershell
+    Invoke-WebRequest `
+        -Method 'PUT' `
+        -Uri "$uri/indexes/$($indexDefinition['name'])?api-version=$apiversion" `
+        -Headers  $headers `
+        -Body (ConvertTo-Json $indexDefinition)
+
+    Invoke-WebRequest `
+        -Method 'PUT' `
+        -Uri "$uri/datasources/$($dataSourceDefinition['name'])?api-version=$apiversion" `
+        -Headers $headers `
+        -Body (ConvertTo-Json $dataSourceDefinition)
+
+    # https://learn.microsoft.com/rest/api/searchservice/create-indexer
+    Invoke-WebRequest `
+        -Method 'PUT' `
+        -Uri "$uri/indexers/$($indexerDefinition['name'])?api-version=$apiversion" `
+        -Headers $headers `
+        -Body (ConvertTo-Json $indexerDefinition)
+```
 
 #### Deploy with existing Azure resources
 
@@ -111,4 +147,3 @@ If you've changed the infrastructure files (`infra` folder or `azure.yaml`), the
 
 From the parent directory:
 `dotnet run --project azure-openai-cli`
-

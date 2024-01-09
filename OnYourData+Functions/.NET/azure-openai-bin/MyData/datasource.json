@@ -1,0 +1,10 @@
+{
+    "name": "blob-datasource",
+    "type": "azureblob",
+    "container": {
+      "name": null
+    },
+    "credentials": {
+      "connectionString": null
+    }
+}
