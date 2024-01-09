@@ -65,7 +65,17 @@ If you don't have any pre-existing Azure services and want to start from a fresh
 > [!NOTE]
 > As of this writing, az cli does not support creating a Search Index or Indexer. An automated workaround is [in-progress]( https://github.com/Azure-Samples/azure-openai-sdk-samples/issues/4), until then the Index can be manually set up as follows.
 
-  * WIP
+  * WIP - Azure Portal steps
+	1. Go to resource group
+	2. Select Search service
+	3. Select "Add Index (JSON)"
+		a. Paste JSON from MyData\oyd-index.json and click Save
+		b. Save index name to AZURE_SEARCH_INDEX
+	4. Add data source
+		a. Select storage account
+	5. Select "Add Indexer (JSON)"
+		a. Paste JSON from MyData\oyd-indexer.json and click Save
+    b. click "Run" 
 
 #### Deploy with existing Azure resources
 
