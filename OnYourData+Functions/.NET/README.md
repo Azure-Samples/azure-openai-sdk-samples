@@ -60,8 +60,12 @@ If you don't have any pre-existing Azure services and want to start from a fresh
 
 1. Run `azd up` - This will provision Azure resources and deploy this sample to those resources, including building the search index based on the files found in the `./data` folder.
     * You will be prompted to select a location for the resources, this needs to be a location with OpenAI resource support (which is currently a short list). That location list is based on the [OpenAI model availability table](https://learn.microsoft.com/azure/cognitive-services/openai/concepts/models#model-summary-table-and-region-availability) and may become outdated as availability changes.
-1. Create a Search Index (update in-progress with https://github.com/Azure-Samples/azure-openai-sdk-samples/issues/4)
-    * (Description of steps to create index)
+1. Create a Search Index
+
+> [!NOTE]
+> As of this writing, az cli does not support creating a Search Index or Indexer. An automated workaround is [in-progress]( https://github.com/Azure-Samples/azure-openai-sdk-samples/issues/4), until then the Index can be manually set up as follows.
+
+  * WIP
 
 #### Deploy with existing Azure resources
 
@@ -111,4 +115,3 @@ If you've changed the infrastructure files (`infra` folder or `azure.yaml`), the
 
 From the parent directory:
 `dotnet run --project azure-openai-cli`
-
