@@ -1,0 +1,11 @@
+{
+    "name": "oyd-indexer",
+    "targetIndexName": "oyd-index",
+    "dataSourceName": "oyd-blobcontainer",
+    "parameters": {
+      "configuration": {
+        "indexedFileNameExtensions": ".md"
+      }
+    },
+    "schedule": null
+  }

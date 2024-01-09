@@ -75,7 +75,29 @@ If you don't have any pre-existing Azure services and want to start from a fresh
 		a. Select storage account
 	5. Select "Add Indexer (JSON)"
 		a. Paste JSON from MyData\oyd-indexer.json and click Save
-    b. click "Run" 
+    b. click "Run"
+
+  * WIP - [Powershell steps](https://learn.microsoft.com/en-us/azure/search/search-get-started-powershell#1---create-an-index)
+```powershell
+    Invoke-WebRequest `
+        -Method 'PUT' `
+        -Uri "$uri/indexes/$($indexDefinition['name'])?api-version=$apiversion" `
+        -Headers  $headers `
+        -Body (ConvertTo-Json $indexDefinition)
+
+    Invoke-WebRequest `
+        -Method 'PUT' `
+        -Uri "$uri/datasources/$($dataSourceDefinition['name'])?api-version=$apiversion" `
+        -Headers $headers `
+        -Body (ConvertTo-Json $dataSourceDefinition)
+
+    # https://learn.microsoft.com/rest/api/searchservice/create-indexer
+    Invoke-WebRequest `
+        -Method 'PUT' `
+        -Uri "$uri/indexers/$($indexerDefinition['name'])?api-version=$apiversion" `
+        -Headers $headers `
+        -Body (ConvertTo-Json $indexerDefinition)
+```
 
 #### Deploy with existing Azure resources
 
